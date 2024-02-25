@@ -14,6 +14,9 @@ Office ai
 # Dashboard
 3001 /dash
 
+# Dashboard
+3003 /dashback
+
 # docker
 workflow
 
@@ -56,7 +59,7 @@ docker build -t webapp-dash .
 docker run -it --name webapp-dash -p 3001:3000 --network my-network webapp-dash
 
 # Postgres
-docker run --name webapp-postgres --network  my-network -e POSTGRES_HOST_AUTH_METHOD=trust -v postgresdatabase:/var/lib/postgresql/data -d postgres
+docker run --name webapp-postgres --network  my-network -e POSTGRES_HOST_AUTH_METHOD=trust -v postgresdatabase:/var/lib/postgresql/data -it postgres
 
 ##
 \l
@@ -111,75 +114,9 @@ docker swarm leave --force
 
 
 
-
-
-
 events {
     worker_connections 1024;
 }
-
-http {
-    server {
-        listen 80;
-
-        location / {
-            proxy_pass http://webapp-home;
-        }
-
-        location /login {
-            proxy_pass http://webapp-home;
-        }
-
-        location /register {
-            proxy_pass http://webapp-home;
-        }
-
-        location /auth/login {
-            proxy_pass http://webapp-auth;
-        }
-
-        location /auth/register {
-            proxy_pass http://webapp-auth;
-        }
-
-        location /pg {
-            proxy_pass http://webapp-postgres;
-        }
-    }
-}
-
-
-
-
-
-
-events {
-    worker_connections 1024;
-}
-
-http {
-    server {
-        listen 80;
-
-        location / {
-            proxy_pass http://webapp-home:3000;
-        }
-
-        location /auth/login {
-            proxy_pass http://webapp-auth:5000/auth/login;
-        }
-
-        location /auth/connection-status {
-            proxy_pass http://webapp-auth:5000/auth/connection-status;
-        }
-    }
-}
-
-
-
-
-
-
 
 http {
     server {
