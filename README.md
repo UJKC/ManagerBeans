@@ -207,7 +207,6 @@ http {
 
 
 
--- Employee Table
 CREATE TABLE Employee (
     EmployeeID SERIAL PRIMARY KEY,
     FullName VARCHAR(100),
@@ -218,11 +217,18 @@ CREATE TABLE Employee (
     Address TEXT
 );
 
+-- Department Table
+CREATE TABLE Departments (
+    DepartmentID SERIAL PRIMARY KEY,
+    DepartmentName VARCHAR(100),
+    ParentDepartmentID INT REFERENCES Departments(DepartmentID)
+);
+
 -- Work Information Table
 CREATE TABLE WorkInformation (
     EmployeeID INT PRIMARY KEY REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
     JobTitle VARCHAR(100),
-    DepartmentID INT REFERENCES Department(DepartmentID),
+    DepartmentID INT REFERENCES Departments(DepartmentID),
     ManagerID INT REFERENCES Employee(EmployeeID),
     HireDate DATE,
     OfficeLocation VARCHAR(100),
@@ -280,13 +286,6 @@ CREATE TABLE Projects (
     RelevantDocuments TEXT
 );
 
--- Department Table
-CREATE TABLE Departments (
-    DepartmentID SERIAL PRIMARY KEY,
-    DepartmentName VARCHAR(100),
-    ParentDepartmentID INT REFERENCES Departments(DepartmentID)
-);
-
 -- Employee-Project Relationship Table
 CREATE TABLE EmployeeProjectRelationship (
     EmployeeID INT REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
@@ -307,6 +306,16 @@ VALUES ('John Doe', '1990-05-15', 'Male', '123-456-7890', 'john.doe@example.com'
        ('Michael Johnson', '1982-03-10', 'Male', '555-555-5555', 'michael.johnson@example.com', '789 Oak St, City, Country'),
        ('Emily Brown', '1995-12-28', 'Female', '777-777-7777', 'emily.brown@example.com', '321 Pine St, City, Country'),
        ('David Lee', '1988-07-02', 'Male', '999-999-9999', 'david.lee@example.com', '654 Maple St, City, Country');
+       
+       -- Department Table
+INSERT INTO Departments (DepartmentName, ParentDepartmentID) VALUES
+    ('Management', NULL), -- Top-level department
+    ('R & D', NULL), -- Top-level department
+    ('Sales', NULL), -- Top-level department
+    ('Administration', 1), -- Sub-department of Management
+    ('Professional Services', 1), -- Sub-department of Management
+    ('Research and Development USA', 2), -- Sub-department of R & D
+    ('Research and Development India', 2); -- Sub-department of R & D
 
 -- Work Information Table
 INSERT INTO WorkInformation (EmployeeID, JobTitle, DepartmentID, ManagerID, HireDate, OfficeLocation, EmploymentStatus, Salary, PerformanceReviews)
@@ -355,29 +364,19 @@ VALUES (1, '2018-01-15', '2023-01-14', 'Terms and conditions apply.', 'Agreement
 
 -- Projects Table
 INSERT INTO Projects (ProjectName, ProjectDescription, StartDate, EndDate, ProjectManagerID, Budget, Status, ClientInformation, RelevantDocuments)
-VALUES ('E-commerce Platform Development', 'Developing an online marketplace for various products.', '2021-01-01', '2022-06-30', 3, 1000000.00, 'Ongoing', 'Client: XYZ Corporation', 'Project plan, requirements document'),
+VALUES ('E-commerce Platform Development', 'Developing an online marketplace for various products.', '2021-01-01', '2022-06-30', 1, 1000000.00, 'Ongoing', 'Client: XYZ Corporation', 'Project plan, requirements document'),
        ('Data Analytics Dashboard Implementation', 'Building a dashboard for analyzing sales data.', '2020-07-01', '2021-12-31', 2, 500000.00, 'Completed', 'Client: ABC Company', 'Data analysis report, user feedback'),
        ('New Product Launch', 'Launching a new software product into the market.', '2022-03-01', '2023-09-30', 3, 1500000.00, 'Planning', 'Client: LMN Enterprises', 'Market research report, product roadmap'),
        ('Website Redesign', 'Redesigning the company website for better user experience.', '2021-04-01', '2022-02-28', 4, 300000.00, 'In Progress', 'Internal Project', 'Wireframes, design mockups'),
        ('Network Infrastructure Upgrade', 'Upgrading network infrastructure for improved performance.', '2022-01-01', '2022-12-31', 5, 800000.00, 'Ongoing', 'Internal Project', 'Network architecture plan, equipment list');
 
--- Department Table
-INSERT INTO Departments (DepartmentName, ParentDepartmentID) VALUES
-    ('Management', NULL), -- Top-level department
-    ('R & D', NULL), -- Top-level department
-    ('Sales', NULL), -- Top-level department
-    ('Administration', 1), -- Sub-department of Management
-    ('Professional Services', 1), -- Sub-department of Management
-    ('Research and Development USA', 2), -- Sub-department of R & D
-    ('Research and Development India', 2); -- Sub-department of R & D
-
 -- Insert values into EmployeeProjectRelationship table
 INSERT INTO EmployeeProjectRelationship (EmployeeID, ProjectID)
-VALUES (1, 1001), -- Employee 1 assigned to Project 1001
-       (2, 1001), -- Employee 2 assigned to Project 1001
-       (3, 1002), -- Employee 3 assigned to Project 1002
-       (4, 1003), -- Employee 4 assigned to Project 1003
-       (5, 1003); -- Employee 5 assigned to Project 1003
+VALUES (1, 1), -- Employee 1 assigned to Project 1001
+       (2, 1), -- Employee 2 assigned to Project 1001
+       (3, 2), -- Employee 3 assigned to Project 1002
+       (4, 3), -- Employee 4 assigned to Project 1003
+       (5, 3); -- Employee 5 assigned to Project 1003
 
 
 
