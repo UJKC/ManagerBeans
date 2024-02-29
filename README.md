@@ -957,3 +957,15 @@ GROUP BY c.category_id, c.name;
 ```
 
 These select statements demonstrate how to retrieve data from the tables, including users, tasks, task categories, workload information, and overwork logs. You can adjust the queries as needed to filter, aggregate, or join the data based on your specific requirements. Let me know if you need further assistance or additional examples!
+
+SELECT 
+    t.task_id,
+    t.title AS task_title,
+    t.description AS task_description,
+    t.deadline AS task_deadline,
+    t.status AS task_status,
+    u.username AS assigned_to_username
+FROM 
+    tasks t
+LEFT JOIN 
+    users u ON t.assigned_to = u.user_id;
