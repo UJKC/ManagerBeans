@@ -234,7 +234,7 @@ CREATE TABLE EmployeeProjectRelationship (
 CREATE TABLE Position (
     position_id SERIAL PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
-    department_id INT NOT NULL REFERENCES Department(department_id)
+    DepartmentID INT NOT NULL REFERENCES Departments(DepartmentID)
 );
 
 -- Required Recruitment Skills Table
@@ -251,88 +251,55 @@ CREATE TABLE Position_Recruitment_Skill (
     PRIMARY KEY (position_id, skill_id)
 );
 
-Certainly! Below is a comprehensive PostgreSQL table structure for task organization targeting HR professionals:
-
-1. **Users Table**:
-   - Stores information about users, including HR professionals and other employees.
-
-```sql
-CREATE TABLE users (
-    user_id SERIAL PRIMARY KEY,
-    username VARCHAR(50) NOT NULL,
-    email VARCHAR(100) NOT NULL,
-    role VARCHAR(50) NOT NULL -- HR, Employee, etc.
-    -- Add other relevant fields such as name, department, etc.
-);
-```
-
-2. **Tasks Table**:
-   - Stores information about tasks assigned to employees.
-
-```sql
+-- Task Table
 CREATE TABLE tasks (
     task_id SERIAL PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
     description TEXT,
     deadline TIMESTAMP NOT NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'Pending', -- Pending, In Progress, Completed, etc.
-    assigned_to INTEGER REFERENCES users(user_id),
-    created_by INTEGER REFERENCES users(user_id),
+    assigned_to INTEGER REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
+    created_by INTEGER REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     -- Add other relevant fields such as priority, category, etc.
 );
-```
 
-3. **Task Categories Table**:
-   - Stores categories or types of tasks for better organization.
-
-```sql
+-- Task Category table
 CREATE TABLE task_categories (
     category_id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL
 );
-```
 
-4. **User Tasks (Many-to-Many) Table**:
-   - Associates users with tasks to handle assignments.
-
-```sql
+-- Employee Task table
 CREATE TABLE user_tasks (
-    user_id INTEGER REFERENCES users(user_id),
+    EmployeeID INT REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
     task_id INTEGER REFERENCES tasks(task_id),
-    PRIMARY KEY (user_id, task_id)
+    PRIMARY KEY (EmployeeID, task_id)
 );
-```
 
-5. **Workload Table**:
-   - Stores calculated workload information for users.
-
-```sql
+-- Workload table
 CREATE TABLE workload (
-    user_id INTEGER REFERENCES users(user_id),
+    EmployeeID INT REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
     date DATE NOT NULL,
     tasks_count INTEGER NOT NULL DEFAULT 0,
-    PRIMARY KEY (user_id, date)
+    PRIMARY KEY (EmployeeID, date)
     -- Add other relevant workload metrics such as hours worked, tasks completed, etc.
 );
-```
 
-6. **Overwork Log Table**:
-   - Records instances of overwork detected by the system.
-
-```sql
+-- overwork_log table
 CREATE TABLE overwork_log (
     log_id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(user_id),
+    EmployeeID INT REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     -- Add other relevant fields such as severity, resolution status, etc.
 );
-```
 
-These tables provide a foundation for managing tasks, users, workload, and overwork detection within an HR-focused task organization system. Depending on your specific requirements, you may need to further customize or expand these tables. Let me know if you need assistance with anything else!
+
+
+
 
 
 
@@ -421,7 +388,7 @@ VALUES (1, 1), -- Employee 1 assigned to Project 1001
        (5, 3); -- Employee 5 assigned to Project 1003
 
 -- Inserting data into the Position table
-INSERT INTO Position (title, department_id) VALUES
+INSERT INTO Position (title, DepartmentID) VALUES
     ('HR Manager', 1),
     ('Recruiter', 1),
     ('Marketing Specialist', 2),
@@ -455,66 +422,40 @@ INSERT INTO Position_Recruitment_Skill (position_id, skill_id) VALUES
     (6, 6),
     (7, 7),
     (8, 8),
-    (9, 9),
-    (10, 10);
+    (9, 9);
 
-Sure, here are some sample insert statements to populate the tables with dummy data:
-
-1. **Insert Users**:
-
-```sql
-INSERT INTO users (username, email, role) VALUES
-    ('hr_manager', 'hr_manager@example.com', 'HR'),
-    ('employee1', 'employee1@example.com', 'Employee'),
-    ('employee2', 'employee2@example.com', 'Employee');
-```
-
-2. **Insert Tasks**:
-
-```sql
+-- Insert Tasks
 INSERT INTO tasks (title, description, deadline, status, assigned_to, created_by) VALUES
     ('Review Job Applications', 'Review job applications for new positions.', '2024-03-15 09:00:00', 'Pending', 1, 1),
     ('Employee Training', 'Schedule training sessions for new hires.', '2024-03-10 14:00:00', 'In Progress', 1, 1),
     ('Performance Appraisals', 'Conduct performance appraisals for employees.', '2024-03-20 12:00:00', 'Pending', 1, 1),
-    ('Prepare Monthly Report', 'Compile HR department's monthly report.', '2024-03-31 17:00:00', 'Pending', 1, 1),
+    ('Prepare Monthly Report', 'Compile HR department"s monthly report.', '2024-03-31 17:00:00', 'Pending', 1, 1),
     ('Submit Expense Report', 'Submit expense report for reimbursement.', '2024-03-05 10:00:00', 'Completed', 2, 2);
-```
 
-3. **Insert Task Categories**:
-
-```sql
+-- Insert Task Categories
 INSERT INTO task_categories (name) VALUES
     ('Recruitment'),
     ('Training'),
     ('Performance Management'),
     ('Reporting'),
     ('Finance');
-```
 
-4. **Insert User Tasks**:
-
-```sql
+-- Insert User Tasks
 INSERT INTO user_tasks (user_id, task_id) VALUES
     (1, 1),
     (1, 2),
     (1, 3),
     (1, 4),
     (2, 5);
-```
 
-5. **Insert Workload Data** (Assuming tasks count for each user for a specific date):
-
-```sql
-INSERT INTO workload (user_id, date, tasks_count) VALUES
+-- Insert Workload Data (Assuming tasks count for each user for a specific date):
+INSERT INTO workload (EmployeeID, date, tasks_count) VALUES
     (1, '2024-03-01', 4),
     (1, '2024-03-02', 5),
     (1, '2024-03-03', 4),
     (2, '2024-03-01', 1),
     (2, '2024-03-02', 2),
     (2, '2024-03-03', 2);
-```
-
-These insert statements will populate the tables with sample data for users, tasks, task categories, user-task associations, and workload information. Adjust the data according to your specific requirements and additional fields you may have in your tables. Let me know if you need further assistance!
 
 
 
