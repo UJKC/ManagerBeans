@@ -230,6 +230,27 @@ CREATE TABLE EmployeeProjectRelationship (
     PRIMARY KEY (EmployeeID, ProjectID)
 );
 
+-- Open position Table
+CREATE TABLE Position (
+    position_id SERIAL PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
+    department_id INT NOT NULL REFERENCES Department(department_id)
+);
+
+-- Required Recruitment Skills Table
+CREATE TABLE Recruitment_Skill (
+    skill_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description TEXT
+);
+
+-- Position_Recruitment_Skill Table
+CREATE TABLE Position_Recruitment_Skill (
+    position_id INT NOT NULL REFERENCES Position(position_id),
+    skill_id INT NOT NULL REFERENCES Recruitment_Skill(skill_id),
+    PRIMARY KEY (position_id, skill_id)
+);
+
 
 
 
@@ -272,16 +293,16 @@ VALUES (1, 'Mary Doe (sister)', 'Alice Doe (mother)', 'No medical conditions', '
 
 -- Skills Table
 INSERT INTO Skills (EmployeeID, SkillName, ProficiencyLevel)
-VALUES (1, 'Java', 'Advanced'),
+VALUES (1, 'Java', 'Beginner'),
        (1, 'SQL', 'Intermediate'),
        (2, 'Python', 'Expert'),
-       (2, 'Machine Learning', 'Advanced'),
+       (2, 'Machine Learning', 'Beginner'),
        (3, 'Product Management', 'Expert'),
-       (3, 'Agile Methodologies', 'Advanced'),
+       (3, 'Agile Methodologies', 'Beginner'),
        (4, 'UI Design', 'Intermediate'),
        (4, 'Adobe XD', 'Intermediate'),
        (5, 'Network Security', 'Expert'),
-       (5, 'Cisco Networking', 'Advanced');
+       (5, 'Cisco Networking', 'Beginner');
 
 -- Current Status Table
 INSERT INTO CurrentStatus (EmployeeID, Status, LastUpdated)
@@ -314,6 +335,44 @@ VALUES (1, 1), -- Employee 1 assigned to Project 1001
        (3, 2), -- Employee 3 assigned to Project 1002
        (4, 3), -- Employee 4 assigned to Project 1003
        (5, 3); -- Employee 5 assigned to Project 1003
+
+-- Inserting data into the Position table
+INSERT INTO Position (title, department_id) VALUES
+    ('HR Manager', 1),
+    ('Recruiter', 1),
+    ('Marketing Specialist', 2),
+    ('Software Engineer', 3),
+    ('QA Engineer', 3),
+    ('Financial Analyst', 4),
+    ('Accountant', 4),
+    ('Sales Manager', 5),
+    ('Sales Representative', 5);
+
+-- Inserting data into the Recruitment_Skill table
+INSERT INTO Recruitment_Skill (name, description) VALUES
+    ('Recruitment Strategy', 'Developing effective recruitment strategies'),
+    ('Interviewing', 'Conducting interviews and evaluating candidates'),
+    ('Marketing Campaigns', 'Planning and executing marketing campaigns'),
+    ('Programming', 'Software development using various programming languages'),
+    ('Testing', 'Quality assurance testing of software products'),
+    ('Financial Analysis', 'Analyzing financial data and preparing reports'),
+    ('Accounting Principles', 'Applying accounting principles and standards'),
+    ('Sales Strategy', 'Developing and implementing sales strategies'),
+    ('Customer Relationship Management', 'Managing customer relationships and interactions'),
+    ('Negotiation', 'Negotiating deals and contracts');
+
+-- Inserting data into the Position_Recruitment_Skill table
+INSERT INTO Position_Recruitment_Skill (position_id, skill_id) VALUES
+    (1, 1),
+    (2, 2),
+    (3, 3),
+    (4, 4),
+    (5, 5),
+    (6, 6),
+    (7, 7),
+    (8, 8),
+    (9, 9),
+    (10, 10);
 
 
 
@@ -395,6 +454,16 @@ UPDATE EmployeeProjectRelationship
 SET ProjectID = 1002 -- Replace '1002' with the new ProjectID
 WHERE EmployeeID = 1; -- Replace '1' with the EmployeeID
 
+-- Update Position table
+UPDATE Position
+SET title = 'HR Director'
+WHERE position_id = 1;
+
+-- Update Recruitment_Skill table
+UPDATE Recruitment_Skill
+SET description = 'Developing and implementing recruitment strategies'
+WHERE skill_id = 1;
+
 
 
 
@@ -474,6 +543,14 @@ WHERE EmployeeID = 1; -- Replace '1' with the ID of the employee you want to del
 DELETE FROM Projects
 WHERE ProjectID = 1001; -- Replace '1001' with the ID of the project you want to delete
 
+-- Delete a position from the Position table
+DELETE FROM Position
+WHERE position_id = 10; -- Delete position with position_id = 10
+
+-- Delete a skill from the Recruitment_Skill table
+DELETE FROM Recruitment_Skill
+WHERE skill_id = 10; -- Delete skill with skill_id = 10
+
 
 
 
@@ -517,3 +594,49 @@ FROM Department;
 SELECT *
 FROM EmployeeProjectRelationship
 WHERE EmployeeID = 1; -- Replace '1' with the ID of the employee you want to retrieve project relationships for
+
+Certainly! Here are some example `SELECT` statements to retrieve data from the tables:
+
+1. Retrieve all departments:
+```sql
+SELECT * FROM Department;
+```
+
+2. Retrieve all positions:
+```sql
+SELECT * FROM Position;
+```
+
+3. Retrieve all recruitment skills:
+```sql
+SELECT * FROM Recruitment_Skill;
+```
+
+4. Retrieve all projects:
+```sql
+SELECT * FROM Project;
+```
+
+5. Retrieve positions along with their associated department names:
+```sql
+SELECT Position.title, Department.name AS department_name
+FROM Position
+JOIN Department ON Position.department_id = Department.department_id;
+```
+
+6. Retrieve projects along with their associated department names:
+```sql
+SELECT Project.name, Department.name AS department_name
+FROM Project
+JOIN Department ON Project.department_id = Department.department_id;
+```
+
+7. Retrieve positions along with the skills required for each position:
+```sql
+SELECT Position.title, Recruitment_Skill.name AS required_skill
+FROM Position
+JOIN Position_Recruitment_Skill ON Position.position_id = Position_Recruitment_Skill.position_id
+JOIN Recruitment_Skill ON Position_Recruitment_Skill.skill_id = Recruitment_Skill.skill_id;
+```
+
+These are just some examples of `SELECT` statements. You can customize them or combine them as needed to retrieve the specific data you're interested in from your tables.
