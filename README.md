@@ -251,6 +251,90 @@ CREATE TABLE Position_Recruitment_Skill (
     PRIMARY KEY (position_id, skill_id)
 );
 
+Certainly! Below is a comprehensive PostgreSQL table structure for task organization targeting HR professionals:
+
+1. **Users Table**:
+   - Stores information about users, including HR professionals and other employees.
+
+```sql
+CREATE TABLE users (
+    user_id SERIAL PRIMARY KEY,
+    username VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    role VARCHAR(50) NOT NULL -- HR, Employee, etc.
+    -- Add other relevant fields such as name, department, etc.
+);
+```
+
+2. **Tasks Table**:
+   - Stores information about tasks assigned to employees.
+
+```sql
+CREATE TABLE tasks (
+    task_id SERIAL PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
+    description TEXT,
+    deadline TIMESTAMP NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'Pending', -- Pending, In Progress, Completed, etc.
+    assigned_to INTEGER REFERENCES users(user_id),
+    created_by INTEGER REFERENCES users(user_id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    -- Add other relevant fields such as priority, category, etc.
+);
+```
+
+3. **Task Categories Table**:
+   - Stores categories or types of tasks for better organization.
+
+```sql
+CREATE TABLE task_categories (
+    category_id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL
+);
+```
+
+4. **User Tasks (Many-to-Many) Table**:
+   - Associates users with tasks to handle assignments.
+
+```sql
+CREATE TABLE user_tasks (
+    user_id INTEGER REFERENCES users(user_id),
+    task_id INTEGER REFERENCES tasks(task_id),
+    PRIMARY KEY (user_id, task_id)
+);
+```
+
+5. **Workload Table**:
+   - Stores calculated workload information for users.
+
+```sql
+CREATE TABLE workload (
+    user_id INTEGER REFERENCES users(user_id),
+    date DATE NOT NULL,
+    tasks_count INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (user_id, date)
+    -- Add other relevant workload metrics such as hours worked, tasks completed, etc.
+);
+```
+
+6. **Overwork Log Table**:
+   - Records instances of overwork detected by the system.
+
+```sql
+CREATE TABLE overwork_log (
+    log_id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(user_id),
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    -- Add other relevant fields such as severity, resolution status, etc.
+);
+```
+
+These tables provide a foundation for managing tasks, users, workload, and overwork detection within an HR-focused task organization system. Depending on your specific requirements, you may need to further customize or expand these tables. Let me know if you need assistance with anything else!
+
+
 
 
 
@@ -374,6 +458,64 @@ INSERT INTO Position_Recruitment_Skill (position_id, skill_id) VALUES
     (9, 9),
     (10, 10);
 
+Sure, here are some sample insert statements to populate the tables with dummy data:
+
+1. **Insert Users**:
+
+```sql
+INSERT INTO users (username, email, role) VALUES
+    ('hr_manager', 'hr_manager@example.com', 'HR'),
+    ('employee1', 'employee1@example.com', 'Employee'),
+    ('employee2', 'employee2@example.com', 'Employee');
+```
+
+2. **Insert Tasks**:
+
+```sql
+INSERT INTO tasks (title, description, deadline, status, assigned_to, created_by) VALUES
+    ('Review Job Applications', 'Review job applications for new positions.', '2024-03-15 09:00:00', 'Pending', 1, 1),
+    ('Employee Training', 'Schedule training sessions for new hires.', '2024-03-10 14:00:00', 'In Progress', 1, 1),
+    ('Performance Appraisals', 'Conduct performance appraisals for employees.', '2024-03-20 12:00:00', 'Pending', 1, 1),
+    ('Prepare Monthly Report', 'Compile HR department's monthly report.', '2024-03-31 17:00:00', 'Pending', 1, 1),
+    ('Submit Expense Report', 'Submit expense report for reimbursement.', '2024-03-05 10:00:00', 'Completed', 2, 2);
+```
+
+3. **Insert Task Categories**:
+
+```sql
+INSERT INTO task_categories (name) VALUES
+    ('Recruitment'),
+    ('Training'),
+    ('Performance Management'),
+    ('Reporting'),
+    ('Finance');
+```
+
+4. **Insert User Tasks**:
+
+```sql
+INSERT INTO user_tasks (user_id, task_id) VALUES
+    (1, 1),
+    (1, 2),
+    (1, 3),
+    (1, 4),
+    (2, 5);
+```
+
+5. **Insert Workload Data** (Assuming tasks count for each user for a specific date):
+
+```sql
+INSERT INTO workload (user_id, date, tasks_count) VALUES
+    (1, '2024-03-01', 4),
+    (1, '2024-03-02', 5),
+    (1, '2024-03-03', 4),
+    (2, '2024-03-01', 1),
+    (2, '2024-03-02', 2),
+    (2, '2024-03-03', 2);
+```
+
+These insert statements will populate the tables with sample data for users, tasks, task categories, user-task associations, and workload information. Adjust the data according to your specific requirements and additional fields you may have in your tables. Let me know if you need further assistance!
+
 
 
 
@@ -464,6 +606,64 @@ UPDATE Recruitment_Skill
 SET description = 'Developing and implementing recruitment strategies'
 WHERE skill_id = 1;
 
+Certainly! Here are some sample update statements to modify data in the tables:
+
+1. **Update Tasks Status**:
+   
+```sql
+-- Update the status of a specific task to 'Completed'
+UPDATE tasks
+SET status = 'Completed'
+WHERE task_id = 1;
+```
+
+2. **Update Task Deadline**:
+
+```sql
+-- Update the deadline of a specific task
+UPDATE tasks
+SET deadline = '2024-03-25 09:00:00'
+WHERE task_id = 2;
+```
+
+3. **Update User Role**:
+
+```sql
+-- Update the role of a specific user
+UPDATE users
+SET role = 'Manager'
+WHERE user_id = 1;
+```
+
+4. **Update Workload Information**:
+
+```sql
+-- Update the number of tasks for a user on a specific date
+UPDATE workload
+SET tasks_count = 6
+WHERE user_id = 1 AND date = '2024-03-01';
+```
+
+5. **Update Task Description**:
+
+```sql
+-- Update the description of a specific task
+UPDATE tasks
+SET description = 'Conduct interviews for shortlisted candidates.'
+WHERE task_id = 1;
+```
+
+6. **Update Task Assigned User**:
+
+```sql
+-- Update the assigned user of a specific task
+UPDATE tasks
+SET assigned_to = 2
+WHERE task_id = 3;
+```
+
+These update statements demonstrate how to modify data in the tables, such as updating task status, user roles, task deadlines, workload information, and task descriptions. Adjust the statements as needed to reflect the changes you want to make in your database. Let me know if you need further assistance or additional examples!
+
 
 
 
@@ -550,6 +750,58 @@ WHERE position_id = 10; -- Delete position with position_id = 10
 -- Delete a skill from the Recruitment_Skill table
 DELETE FROM Recruitment_Skill
 WHERE skill_id = 10; -- Delete skill with skill_id = 10
+
+Certainly! Here are some sample delete statements to remove data from the tables:
+
+1. **Delete Tasks**:
+
+```sql
+-- Delete a specific task by its ID
+DELETE FROM tasks
+WHERE task_id = 1;
+```
+
+2. **Delete Users**:
+
+```sql
+-- Delete a specific user by their ID
+DELETE FROM users
+WHERE user_id = 2;
+```
+
+3. **Delete Task Categories**:
+
+```sql
+-- Delete a specific task category by its ID
+DELETE FROM task_categories
+WHERE category_id = 3;
+```
+
+4. **Delete User Tasks**:
+
+```sql
+-- Delete all tasks associated with a specific user
+DELETE FROM user_tasks
+WHERE user_id = 1;
+```
+
+5. **Delete Workload Information**:
+
+```sql
+-- Delete workload information for a specific user and date
+DELETE FROM workload
+WHERE user_id = 1 AND date = '2024-03-01';
+```
+
+6. **Delete Overwork Logs**:
+
+```sql
+-- Delete overwork logs older than a specific date
+DELETE FROM overwork_log
+WHERE start_date < '2024-01-01';
+```
+
+These delete statements demonstrate how to remove data from the tables, such as deleting tasks, users, task categories, user-task associations, workload information, and overwork logs. Adjust the statements as needed to reflect the deletions you want to perform in your database. Let me know if you need further assistance or additional examples!
 
 
 
@@ -640,3 +892,68 @@ JOIN Recruitment_Skill ON Position_Recruitment_Skill.skill_id = Recruitment_Skil
 ```
 
 These are just some examples of `SELECT` statements. You can customize them or combine them as needed to retrieve the specific data you're interested in from your tables.
+
+Certainly! Here are some sample select statements to retrieve data from the tables:
+
+1. **Select All Users**:
+
+```sql
+SELECT * FROM users;
+```
+
+2. **Select All Tasks**:
+
+```sql
+SELECT * FROM tasks;
+```
+
+3. **Select Tasks with Assigned Users**:
+
+```sql
+SELECT t.*, u.username AS assigned_to_username
+FROM tasks t
+LEFT JOIN users u ON t.assigned_to = u.user_id;
+```
+
+4. **Select Tasks Count by Status**:
+
+```sql
+SELECT status, COUNT(*) AS task_count
+FROM tasks
+GROUP BY status;
+```
+
+5. **Select Users with Overworked Tasks**:
+
+```sql
+SELECT u.*, w.date, w.tasks_count
+FROM users u
+JOIN workload w ON u.user_id = w.user_id
+WHERE w.tasks_count > 5;
+```
+
+6. **Select Tasks Due Today**:
+
+```sql
+SELECT *
+FROM tasks
+WHERE deadline::date = CURRENT_DATE;
+```
+
+7. **Select Overwork Logs**:
+
+```sql
+SELECT *
+FROM overwork_log;
+```
+
+8. **Select Task Categories with Task Count**:
+
+```sql
+SELECT c.*, COUNT(t.task_id) AS task_count
+FROM task_categories c
+LEFT JOIN tasks t ON c.category_id = t.category_id
+GROUP BY c.category_id, c.name;
+```
+
+These select statements demonstrate how to retrieve data from the tables, including users, tasks, task categories, workload information, and overwork logs. You can adjust the queries as needed to filter, aggregate, or join the data based on your specific requirements. Let me know if you need further assistance or additional examples!
