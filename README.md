@@ -542,9 +542,9 @@ INSERT INTO workload (EmployeeID, date, tasks_count) VALUES
     (2, '2024-03-03', 2);
 
 -- Insert sample interviewers
-INSERT INTO interviewers (name, email, DepartmentID) VALUES 
-    ('John Doe', 'john.doe@example.com', 1),
-    ('Jane Smith', 'jane.smith@example.com', 2);
+INSERT INTO interviewers (id, DepartmentID) VALUES 
+    (1, 1),
+    (2, 2);
 
 -- Insert sample topics
 INSERT INTO topics (name, description) VALUES 
