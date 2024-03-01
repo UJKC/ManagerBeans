@@ -395,7 +395,7 @@ VALUES (1, 1), -- Employee 1 assigned to Project 1001
        (5, 3); -- Employee 5 assigned to Project 1003
 
 -- Inserting data into the Position table
-INSERT INTO Position (title, department_id) VALUES
+INSERT INTO Position (title, DepartmentID) VALUES
     ('HR Manager', 1),
     ('Recruiter', 1),
     ('Marketing Specialist', 2),
@@ -429,15 +429,14 @@ INSERT INTO Position_Recruitment_Skill (position_id, skill_id) VALUES
     (6, 6),
     (7, 7),
     (8, 8),
-    (9, 9),
-    (10, 10);
+    (9, 9);
 
 -- Insert Tasks
 INSERT INTO tasks (title, description, deadline, status, assigned_to, created_by) VALUES
     ('Review Job Applications', 'Review job applications for new positions.', '2024-03-15 09:00:00', 'Pending', 1, 1),
     ('Employee Training', 'Schedule training sessions for new hires.', '2024-03-10 14:00:00', 'In Progress', 1, 1),
     ('Performance Appraisals', 'Conduct performance appraisals for employees.', '2024-03-20 12:00:00', 'Pending', 1, 1),
-    ('Prepare Monthly Report', 'Compile HR department's monthly report.', '2024-03-31 17:00:00', 'Pending', 1, 1),
+    ('Prepare Monthly Report', 'Compile HR department"s monthly report.', '2024-03-31 17:00:00', 'Pending', 1, 1),
     ('Submit Expense Report', 'Submit expense report for reimbursement.', '2024-03-05 10:00:00', 'Completed', 2, 2);
 
 -- Insert task categories
@@ -463,7 +462,7 @@ INSERT INTO task_category_mapping (task_id, category_id) VALUES
     (3, 3);  -- Task 3 belongs to HR category
 
 -- Insert User Tasks
-INSERT INTO user_tasks (user_id, task_id) VALUES
+INSERT INTO user_tasks (EmployeeID, task_id) VALUES
     (1, 1),
     (1, 2),
     (1, 3),
@@ -471,13 +470,15 @@ INSERT INTO user_tasks (user_id, task_id) VALUES
     (2, 5);
 
 -- Insert Workload Data (Assuming tasks count for each user for a specific date):
-INSERT INTO workload (user_id, date, tasks_count) VALUES
+INSERT INTO workload (EmployeeID, date, tasks_count) VALUES
     (1, '2024-03-01', 4),
     (1, '2024-03-02', 5),
     (1, '2024-03-03', 4),
     (2, '2024-03-01', 1),
     (2, '2024-03-02', 2),
     (2, '2024-03-03', 2);
+
+
 
 
 
