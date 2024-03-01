@@ -304,6 +304,72 @@ CREATE TABLE overwork_log (
     -- Add other relevant fields such as severity, resolution status, etc.
 );
 
+-- Interviewers table to store information about interviewers
+CREATE TABLE interviewers (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100),
+    DepartmentID INT REFERENCES Departments(DepartmentID)
+);
+
+-- Topics table to store information about interview topics
+CREATE TABLE IF NOT EXISTS topics (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT
+);
+
+-- Interview Types table to store types of interviews
+CREATE TABLE IF NOT EXISTS interview_types (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description TEXT
+);
+
+-- Hiring Flows table to store information about the overall hiring process
+CREATE TABLE IF NOT EXISTS hiring_flows (
+    id SERIAL PRIMARY KEY,
+    DepartmentID INT REFERENCES Departments(DepartmentID),
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    start_date DATE,
+    end_date DATE
+);
+
+-- Rounds table to store information about different rounds in the hiring process
+CREATE TABLE IF NOT EXISTS rounds (
+    id SERIAL PRIMARY KEY,
+    hiring_flow_id INT REFERENCES hiring_flows(id),
+    round_number INT,
+    topic_id INT REFERENCES topics(id),
+    interviewer_id INT REFERENCES interviewers(id),
+    interview_type_id INT REFERENCES interview_types(id),
+    evaluation_process TEXT,
+    start_time TIMESTAMP,
+    end_time TIMESTAMP
+);
+
+-- Candidates table to store information about candidates
+CREATE TABLE IF NOT EXISTS candidates (
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100),
+    phone VARCHAR(20),
+    resume_url VARCHAR(255),
+    applied_date DATE
+);
+
+-- Applications table to store information about candidate applications
+CREATE TABLE IF NOT EXISTS applications (
+    id SERIAL PRIMARY KEY,
+    candidate_id INT REFERENCES candidates(id),
+    hiring_flow_id INT REFERENCES hiring_flows(id),
+    status VARCHAR(50),
+    applied_date DATE,
+    current_round_number INT,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 
 
@@ -477,6 +543,43 @@ INSERT INTO workload (EmployeeID, date, tasks_count) VALUES
     (2, '2024-03-01', 1),
     (2, '2024-03-02', 2),
     (2, '2024-03-03', 2);
+
+-- Insert sample interviewers
+INSERT INTO interviewers (name, email, DepartmentID) VALUES 
+    ('John Doe', 'john.doe@example.com', 1),
+    ('Jane Smith', 'jane.smith@example.com', 2);
+
+-- Insert sample topics
+INSERT INTO topics (name, description) VALUES 
+    ('Technical Skills', 'Assessment of technical skills and knowledge'),
+    ('Behavioral Competencies', 'Assessment of soft skills and behavioral competencies');
+
+-- Insert sample interview types
+INSERT INTO interview_types (name, description) VALUES 
+    ('Technical Interview', 'Evaluation of technical skills and knowledge'),
+    ('Behavioral Interview', 'Evaluation of soft skills and behavioral competencies');
+
+-- Insert sample hiring flows
+INSERT INTO hiring_flows (DepartmentID, name, description, start_date, end_date) VALUES 
+    (1, 'Software Engineer Hiring Flow', 'Hiring flow for software engineering positions', '2024-03-01', '2024-03-31'),
+    (2, 'Marketing Specialist Hiring Flow', 'Hiring flow for marketing specialist positions', '2024-03-01', '2024-03-31');
+
+-- Insert sample candidates
+INSERT INTO candidates (first_name, last_name, email, phone, resume_url, applied_date) VALUES 
+    ('Alice', 'Johnson', 'alice.johnson@example.com', '+1234567890', '', '2024-03-05'),
+    ('Bob', 'Smith', 'bob.smith@example.com', '+1987654321', '', '2024-03-07');
+
+-- Insert sample applications with current round numbers
+INSERT INTO applications (candidate_id, hiring_flow_id, status, applied_date, current_round_number) VALUES 
+    (1, 1, 'Submitted', '2024-03-05', 1),
+    (2, 2, 'In Review', '2024-03-07', 1);
+
+-- Insert sample rounds with start and end times
+INSERT INTO rounds (hiring_flow_id, round_number, topic_id, interviewer_id, interview_type_id, evaluation_process, start_time, end_time) VALUES 
+    (1, 1, 1, 1, 1, 'Technical interview assessing coding skills and problem-solving abilities', '2024-03-10 09:00:00', '2024-03-10 10:00:00'),
+    (1, 2, 2, 2, 2, 'Behavioral interview evaluating teamwork and communication skills', '2024-03-15 09:00:00', '2024-03-15 10:00:00'),
+    (2, 1, 2, 1, 2, 'Behavioral interview assessing marketing strategy and analytical skills', '2024-03-12 09:00:00', '2024-03-12 10:00:00');
+
 
 
 
