@@ -145,230 +145,227 @@ http {
 
 
 CREATE TABLE Employee (
-    EmployeeID SERIAL PRIMARY KEY,
-    FullName VARCHAR(100),
-    DateOfBirth DATE,
-    Gender VARCHAR(10),
-    PhoneNumber VARCHAR(20),
-    Email VARCHAR(100),
-    Address TEXT
+    EmployeeID SERIAL PRIMARY KEY,
+    FullName VARCHAR(100),
+    DateOfBirth DATE,
+    Gender VARCHAR(10),
+    PhoneNumber VARCHAR(20),
+    Email VARCHAR(100),
+    Address TEXT
 );
 
 -- Department Table
 CREATE TABLE Departments (
-    DepartmentID SERIAL PRIMARY KEY,
-    DepartmentName VARCHAR(100),
-    ParentDepartmentID INT REFERENCES Departments(DepartmentID)
+    DepartmentID SERIAL PRIMARY KEY,
+    DepartmentName VARCHAR(100),
+    ParentDepartmentID INT REFERENCES Departments(DepartmentID)
 );
 
 -- Work Information Table
 CREATE TABLE WorkInformation (
-    EmployeeID INT PRIMARY KEY REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
-    JobTitle VARCHAR(100),
-    DepartmentID INT REFERENCES Departments(DepartmentID),
-    ManagerID INT REFERENCES Employee(EmployeeID),
-    HireDate DATE,
-    OfficeLocation VARCHAR(100),
-    EmploymentStatus VARCHAR(20),
-    Salary DECIMAL(10, 2),
-    PerformanceReviews TEXT
+    EmployeeID INT PRIMARY KEY REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
+    JobTitle VARCHAR(100),
+    DepartmentID INT REFERENCES Departments(DepartmentID),
+    ManagerID INT REFERENCES Employee(EmployeeID),
+    HireDate DATE,
+    OfficeLocation VARCHAR(100),
+    EmploymentStatus VARCHAR(20),
+    Salary DECIMAL(10, 2),
+    PerformanceReviews TEXT
 );
 
 -- Private Information Table
 CREATE TABLE PrivateInformation (
-    EmployeeID INT PRIMARY KEY REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
-    EmergencyContact VARCHAR(100),
-    NextOfKin VARCHAR(100),
-    MedicalInformation TEXT,
-    BankAccount VARCHAR(100),
-    TaxInformation VARCHAR(100)
+    EmployeeID INT PRIMARY KEY REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
+    EmergencyContact VARCHAR(100),
+    NextOfKin VARCHAR(100),
+    MedicalInformation TEXT,
+    BankAccount VARCHAR(100),
+    TaxInformation VARCHAR(100)
 );
 
 -- Skills Table
 CREATE TABLE Skills (
-    SkillID SERIAL PRIMARY KEY,
-    EmployeeID INT REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
-    SkillName VARCHAR(100),
-    ProficiencyLevel VARCHAR(50)
+    SkillID SERIAL PRIMARY KEY,
+    EmployeeID INT REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
+    SkillName VARCHAR(100),
+    ProficiencyLevel VARCHAR(50)
 );
 
 -- Current Status Table
 CREATE TABLE CurrentStatus (
-    EmployeeID INT PRIMARY KEY REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
-    Status VARCHAR(20),
-    LastUpdated TIMESTAMP
+    EmployeeID INT PRIMARY KEY REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
+    Status VARCHAR(20),
+    LastUpdated TIMESTAMP
 );
 
 -- Contract Documents Table
 CREATE TABLE ContractDocuments (
-    ContractID SERIAL PRIMARY KEY,
-    EmployeeID INT REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
-    ContractStartDate DATE,
-    ContractEndDate DATE,
-    TermsAndConditions TEXT,
-    LegalAgreements TEXT
+    ContractID SERIAL PRIMARY KEY,
+    EmployeeID INT REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
+    ContractStartDate DATE,
+    ContractEndDate DATE,
+    TermsAndConditions TEXT,
+    LegalAgreements TEXT
 );
 
 -- Projects Table
 CREATE TABLE Projects (
-    ProjectID SERIAL PRIMARY KEY,
-    ProjectName VARCHAR(100),
-    ProjectDescription TEXT,
-    StartDate DATE,
-    EndDate DATE,
-    ProjectManagerID INT REFERENCES Employee(EmployeeID) ON DELETE SET NULL,
-    Budget DECIMAL(15, 2),
-    Status VARCHAR(20),
-    ClientInformation TEXT,
-    RelevantDocuments TEXT
+    ProjectID SERIAL PRIMARY KEY,
+    ProjectName VARCHAR(100),
+    ProjectDescription TEXT,
+    StartDate DATE,
+    EndDate DATE,
+    ProjectManagerID INT REFERENCES Employee(EmployeeID) ON DELETE SET NULL,
+    Budget DECIMAL(15, 2),
+    Status VARCHAR(20),
+    ClientInformation TEXT,
+    RelevantDocuments TEXT
 );
 
 -- Employee-Project Relationship Table
 CREATE TABLE EmployeeProjectRelationship (
-    EmployeeID INT REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
-    ProjectID INT REFERENCES Projects(ProjectID) ON DELETE CASCADE,
-    PRIMARY KEY (EmployeeID, ProjectID)
+    EmployeeID INT REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
+    ProjectID INT REFERENCES Projects(ProjectID) ON DELETE CASCADE,
+    PRIMARY KEY (EmployeeID, ProjectID)
 );
 
 -- Open position Table
 CREATE TABLE Position (
-    position_id SERIAL PRIMARY KEY,
-    title VARCHAR(100) NOT NULL,
-    DepartmentID INT NOT NULL REFERENCES Departments(DepartmentID)
+    position_id SERIAL PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
+    DepartmentID INT NOT NULL REFERENCES Departments(DepartmentID)
 );
 
 -- Required Recruitment Skills Table
 CREATE TABLE Recruitment_Skill (
-    skill_id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    description TEXT
+    skill_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description TEXT
 );
 
 -- Position_Recruitment_Skill Table
 CREATE TABLE Position_Recruitment_Skill (
-    position_id INT NOT NULL REFERENCES Position(position_id),
-    skill_id INT NOT NULL REFERENCES Recruitment_Skill(skill_id),
-    PRIMARY KEY (position_id, skill_id)
+    position_id INT NOT NULL REFERENCES Position(position_id),
+    skill_id INT NOT NULL REFERENCES Recruitment_Skill(skill_id),
+    PRIMARY KEY (position_id, skill_id)
 );
 
 -- Task Table
 CREATE TABLE tasks (
-    task_id SERIAL PRIMARY KEY,
-    title VARCHAR(100) NOT NULL,
-    description TEXT,
-    deadline TIMESTAMP NOT NULL,
-    status VARCHAR(20) NOT NULL DEFAULT 'Pending', -- Pending, In Progress, Completed, etc.
-    assigned_to INTEGER REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
-    created_by INTEGER REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    -- Add other relevant fields such as priority, category, etc.
+    task_id SERIAL PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
+    description TEXT,
+    deadline TIMESTAMP NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'Pending', -- Pending, In Progress, Completed, etc.
+    assigned_to INTEGER REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
+    created_by INTEGER REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    -- Add other relevant fields such as priority, category, etc.
 );
 
 -- Task Category table
 CREATE TABLE task_categories (
-    category_id SERIAL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL
+    category_id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL
 );
 
 -- Task Category Mapping table
 CREATE TABLE task_category_mapping (
-    task_id INT REFERENCES tasks(task_id),
-    category_id INT REFERENCES task_categories(category_id),
-    PRIMARY KEY (task_id, category_id)
+    task_id INT REFERENCES tasks(task_id),
+    category_id INT REFERENCES task_categories(category_id),
+    PRIMARY KEY (task_id, category_id)
 );
 
 -- Employee Task table
 CREATE TABLE user_tasks (
-    EmployeeID INT REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
-    task_id INTEGER REFERENCES tasks(task_id),
-    PRIMARY KEY (EmployeeID, task_id)
+    EmployeeID INT REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
+    task_id INTEGER REFERENCES tasks(task_id),
+    PRIMARY KEY (EmployeeID, task_id)
 );
 
 -- Workload table
 CREATE TABLE workload (
-    EmployeeID INT REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
-    date DATE NOT NULL,
-    tasks_count INTEGER NOT NULL DEFAULT 0,
-    PRIMARY KEY (EmployeeID, date)
-    -- Add other relevant workload metrics such as hours worked, tasks completed, etc.
+    EmployeeID INT REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
+    date DATE NOT NULL,
+    tasks_count INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (EmployeeID, date)
+    -- Add other relevant workload metrics such as hours worked, tasks completed, etc.
 );
 
 -- overwork_log table
 CREATE TABLE overwork_log (
-    log_id SERIAL PRIMARY KEY,
-    EmployeeID INT REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
-    start_date DATE NOT NULL,
-    end_date DATE NOT NULL,
-    description TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    -- Add other relevant fields such as severity, resolution status, etc.
+    log_id SERIAL PRIMARY KEY,
+    EmployeeID INT REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    -- Add other relevant fields such as severity, resolution status, etc.
 );
 
 -- Interviewers table to store information about interviewers
 CREATE TABLE interviewers (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(100),
-    DepartmentID INT REFERENCES Departments(DepartmentID)
+    id INT REFERENCES Employee(EmployeeID) ON DELETE CASCADE,,
+    DepartmentID INT REFERENCES Departments(DepartmentID)
 );
 
 -- Topics table to store information about interview topics
 CREATE TABLE IF NOT EXISTS topics (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    description TEXT
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT
 );
 
 -- Interview Types table to store types of interviews
 CREATE TABLE IF NOT EXISTS interview_types (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    description TEXT
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description TEXT
 );
 
 -- Hiring Flows table to store information about the overall hiring process
 CREATE TABLE IF NOT EXISTS hiring_flows (
-    id SERIAL PRIMARY KEY,
-    DepartmentID INT REFERENCES Departments(DepartmentID),
-    name VARCHAR(100) NOT NULL,
-    description TEXT,
-    start_date DATE,
-    end_date DATE
+    id SERIAL PRIMARY KEY,
+    DepartmentID INT REFERENCES Departments(DepartmentID),
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    start_date DATE,
+    end_date DATE
 );
 
 -- Rounds table to store information about different rounds in the hiring process
 CREATE TABLE IF NOT EXISTS rounds (
-    id SERIAL PRIMARY KEY,
-    hiring_flow_id INT REFERENCES hiring_flows(id),
-    round_number INT,
-    topic_id INT REFERENCES topics(id),
-    interviewer_id INT REFERENCES interviewers(id),
-    interview_type_id INT REFERENCES interview_types(id),
-    evaluation_process TEXT,
-    start_time TIMESTAMP,
-    end_time TIMESTAMP
+    id SERIAL PRIMARY KEY,
+    hiring_flow_id INT REFERENCES hiring_flows(id),
+    round_number INT,
+    topic_id INT REFERENCES topics(id),
+    interviewer_id INT REFERENCES interviewers(id),
+    interview_type_id INT REFERENCES interview_types(id),
+    evaluation_process TEXT,
+    start_time TIMESTAMP,
+    end_time TIMESTAMP
 );
 
 -- Candidates table to store information about candidates
 CREATE TABLE IF NOT EXISTS candidates (
-    id SERIAL PRIMARY KEY,
-    first_name VARCHAR(100) NOT NULL,
-    last_name VARCHAR(100) NOT NULL,
-    email VARCHAR(100),
-    phone VARCHAR(20),
-    resume_url VARCHAR(255),
-    applied_date DATE
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100),
+    phone VARCHAR(20),
+    applied_date DATE
 );
 
 -- Applications table to store information about candidate applications
 CREATE TABLE IF NOT EXISTS applications (
-    id SERIAL PRIMARY KEY,
-    candidate_id INT REFERENCES candidates(id),
-    hiring_flow_id INT REFERENCES hiring_flows(id),
-    status VARCHAR(50),
-    applied_date DATE,
-    current_round_number INT,
-    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    id SERIAL PRIMARY KEY,
+    candidate_id INT REFERENCES candidates(id),
+    hiring_flow_id INT REFERENCES hiring_flows(id),
+    status VARCHAR(50),
+    applied_date DATE,
+    current_round_number INT,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 
