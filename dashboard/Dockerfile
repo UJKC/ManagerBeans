@@ -11,7 +11,7 @@ ARG NODE_VERSION=21.4.0
 FROM node:${NODE_VERSION}-alpine
 
 # Set working directory for all build stages.
-WORKDIR dashboard/
+WORKDIR unysis/
 
 
 ################################################################################
@@ -63,10 +63,10 @@ COPY . .
 #COPY --from=deps /usr/src/app/node_modules ./node_modules
 #COPY --from=build /usr/src/app//usr/share/nginx/html .//usr/share/nginx/html
 
-RUN npm install
+# RUN npm install
 
 # Expose the port that the application listens on.
 EXPOSE 3000
 
 # Run the application.
-CMD npm start
+CMD npx browser-sync -w start
