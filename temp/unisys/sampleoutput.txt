@@ -1,0 +1,116 @@
+Select * from employee;
+[
+    [
+        1,
+        "John Doe",
+        "Tue, 15 May 1990 00:00:00 GMT",
+        "Male",
+        "123-456-7890",
+        "john.doe@example.com",
+        "123 Main St, City, Country"
+    ],
+    [
+        2,
+        "Jane Smith",
+        "Fri, 20 Sep 1985 00:00:00 GMT",
+        "Female",
+        "987-654-3210",
+        "jane.smith@example.com",
+        "456 Elm St, City, Country"
+    ],
+    [
+        3,
+        "Michael Johnson",
+        "Wed, 10 Mar 1982 00:00:00 GMT",
+        "Male",
+        "555-555-5555",
+        "michael.johnson@example.com",
+        "789 Oak St, City, Country"
+    ],
+    [
+        4,
+        "Emily Brown",
+        "Thu, 28 Dec 1995 00:00:00 GMT",
+        "Female",
+        "777-777-7777",
+        "emily.brown@example.com",
+        "321 Pine St, City, Country"
+    ],
+    [
+        5,
+        "David Lee",
+        "Sat, 02 Jul 1988 00:00:00 GMT",
+        "Male",
+        "999-999-9999",
+        "david.lee@example.com",
+        "654 Maple St, City, Country"
+    ]
+]
+
+
+index.html
+select path, EmployeeID, FullName, JobTitle, OfficeLocation, Email, PhoneNumber
+from Employee Natural join WorkInformation;
+[
+    {
+        "Email": "john.doe@example.com",
+        "EmployeeID": 1,
+        "FullName": "John Doe",
+        "JobTitle": "Software Engineer",
+        "OfficeLocation": "HQ Building",
+        "PhoneNumber": "123-456-7890",
+        "path": "/assets/images/avatar-1.jpg"
+    },
+    {
+        "Email": "jane.smith@example.com",
+        "EmployeeID": 2,
+        "FullName": "Jane Smith",
+        "JobTitle": "Data Scientist",
+        "OfficeLocation": "Tech Park",
+        "PhoneNumber": "987-654-3210",
+        "path": "/assets/images/avatar-2.jpg"
+    },
+    {
+        "Email": "michael.johnson@example.com",
+        "EmployeeID": 3,
+        "FullName": "Michael Johnson",
+        "JobTitle": "Product Manager",
+        "OfficeLocation": "Main Office",
+        "PhoneNumber": "555-555-5555",
+        "path": "/assets/images/avatar-3.jpg"
+    },
+    {
+        "Email": "emily.brown@example.com",
+        "EmployeeID": 4,
+        "FullName": "Emily Brown",
+        "JobTitle": "UI/UX Designer",
+        "OfficeLocation": "Downtown Office",
+        "PhoneNumber": "777-777-7777",
+        "path": "/assets/images/avatar-4.jpg"
+    },
+    {
+        "Email": "david.lee@example.com",
+        "EmployeeID": 5,
+        "FullName": "David Lee",
+        "JobTitle": "Network Administrator",
+        "OfficeLocation": "Tech Campus",
+        "PhoneNumber": "999-999-9999",
+        "path": "/assets/images/avatar-5.jpg"
+    }
+]
+
+fetch('http://localhost:5000/dashback/employeeinfo')
+                                        .then(response => {
+                                            if (!response.ok) {
+                                                throw new Error('Network response was not ok');
+                                            }
+                                            return response.json();
+                                        })
+                                        .then(data => {
+                                            $scope.employees = data;
+                                            console.log('Retrieved employees:', $scope.employees[0]);
+                                            $scope.$apply(); // Update the AngularJS scope
+                                        })
+                                        .catch(error => {
+                                            console.error('Error fetching employees:', error);
+                                        });       
