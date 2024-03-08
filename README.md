@@ -416,13 +416,252 @@ CREATE TABLE IF NOT EXISTS applications (
 
 
 
+
+-- Employee TABLE
+CREATE TABLE Employee (
+    path VARCHAR(100),
+    EmployeeID SERIAL PRIMARY KEY,
+    FullName VARCHAR(100),
+    DateOfBirth DATE,
+    Gender VARCHAR(10),
+    PhoneNumber VARCHAR(20),
+    Email VARCHAR(100),
+    Address TEXT
+);
+
+-- Department Table
+CREATE TABLE Departments (
+    DepartmentID SERIAL PRIMARY KEY,
+    DepartmentName VARCHAR(100),
+    ParentDepartmentID INT REFERENCES Departments(DepartmentID)
+);
+
+-- Work Information Table
+CREATE TABLE WorkInformation (
+    EmployeeID INT PRIMARY KEY REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
+    JobTitle VARCHAR(100),
+    DepartmentID INT REFERENCES Departments(DepartmentID),
+    ManagerID INT REFERENCES Employee(EmployeeID),
+    HireDate DATE,
+    OfficeLocation VARCHAR(100),
+    EmploymentStatus VARCHAR(20),
+    Salary DECIMAL(10, 2),
+    PerformanceReviews TEXT
+);
+
+-- Private Information Table
+CREATE TABLE PrivateInformation (
+    EmployeeID INT PRIMARY KEY REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
+    EmergencyContact VARCHAR(100),
+    NextOfKin VARCHAR(100),
+    MedicalInformation TEXT,
+    BankAccount VARCHAR(100),
+    TaxInformation VARCHAR(100)
+);
+
+-- Skills Table
+CREATE TABLE Skills (
+    SkillID SERIAL PRIMARY KEY,
+    EmployeeID INT REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
+    SkillName VARCHAR(100),
+    ProficiencyLevel VARCHAR(50)
+);
+
+-- Current Status Table
+CREATE TABLE CurrentStatus (
+    EmployeeID INT PRIMARY KEY REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
+    Status VARCHAR(20),
+    LastUpdated TIMESTAMP
+);
+
+-- Contract Documents Table
+CREATE TABLE ContractDocuments (
+    ContractID SERIAL PRIMARY KEY,
+    EmployeeID INT REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
+    ContractStartDate DATE,
+    ContractEndDate DATE,
+    TermsAndConditions TEXT,
+    LegalAgreements TEXT
+);
+
+-- Projects Table
+CREATE TABLE Projects (
+    ProjectID SERIAL PRIMARY KEY,
+    ProjectName VARCHAR(100),
+    ProjectDescription TEXT,
+    StartDate DATE,
+    EndDate DATE,
+    ProjectManagerID INT REFERENCES Employee(EmployeeID) ON DELETE SET NULL,
+    Budget DECIMAL(15, 2),
+    Status VARCHAR(20),
+    ClientInformation TEXT,
+    RelevantDocuments TEXT
+);
+
+-- Employee-Project Relationship Table
+CREATE TABLE EmployeeProjectRelationship (
+    EmployeeID INT REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
+    ProjectID INT REFERENCES Projects(ProjectID) ON DELETE CASCADE,
+    PRIMARY KEY (EmployeeID, ProjectID)
+);
+
+-- Open position Table
+CREATE TABLE Position (
+    position_id SERIAL PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
+    DepartmentID INT NOT NULL REFERENCES Departments(DepartmentID)
+);
+
+-- Required Recruitment Skills Table
+CREATE TABLE Recruitment_Skill (
+    skill_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description TEXT
+);
+
+-- Position_Recruitment_Skill Table
+CREATE TABLE Position_Recruitment_Skill (
+    position_id INT NOT NULL REFERENCES Position(position_id),
+    skill_id INT NOT NULL REFERENCES Recruitment_Skill(skill_id),
+    PRIMARY KEY (position_id, skill_id)
+);
+
+-- Task Table
+CREATE TABLE tasks (
+    task_id SERIAL PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
+    description TEXT,
+    deadline TIMESTAMP NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'Pending', -- Pending, In Progress, Completed, etc.
+    assigned_to INTEGER REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
+    created_by INTEGER REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    -- Add other relevant fields such as priority, category, etc.
+);
+
+-- Task Category table
+CREATE TABLE task_categories (
+    category_id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL
+);
+
+-- Task Category Mapping table
+CREATE TABLE task_category_mapping (
+    task_id INT REFERENCES tasks(task_id),
+    category_id INT REFERENCES task_categories(category_id),
+    PRIMARY KEY (task_id, category_id)
+);
+
+-- Employee Task table
+CREATE TABLE user_tasks (
+    EmployeeID INT REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
+    task_id INTEGER REFERENCES tasks(task_id),
+    PRIMARY KEY (EmployeeID, task_id)
+);
+
+-- Workload table
+CREATE TABLE workload (
+    EmployeeID INT REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
+    date DATE NOT NULL,
+    tasks_count INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (EmployeeID, date)
+    -- Add other relevant workload metrics such as hours worked, tasks completed, etc.
+);
+
+-- overwork_log table
+CREATE TABLE overwork_log (
+    log_id SERIAL PRIMARY KEY,
+    EmployeeID INT REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    -- Add other relevant fields such as severity, resolution status, etc.
+);
+
+-- Interviewers table to store information about interviewers
+CREATE TABLE interviewers (
+    id SERIAL PRIMARY KEY,
+    EmployeeID INT REFERENCES Employee(EmployeeID) ON DELETE CASCADE,
+    DepartmentID INT REFERENCES Departments(DepartmentID)
+);
+
+-- Topics table to store information about interview topics
+CREATE TABLE IF NOT EXISTS topics (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT
+);
+
+-- Interview Types table to store types of interviews
+CREATE TABLE IF NOT EXISTS interview_types (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description TEXT
+);
+
+-- Hiring Flows table to store information about the overall hiring process
+CREATE TABLE IF NOT EXISTS hiring_flows (
+    id SERIAL PRIMARY KEY,
+    DepartmentID INT REFERENCES Departments(DepartmentID),
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    start_date DATE,
+    end_date DATE
+);
+
+-- Rounds table to store information about different rounds in the hiring process
+CREATE TABLE IF NOT EXISTS rounds (
+    id SERIAL PRIMARY KEY,
+    hiring_flow_id INT REFERENCES hiring_flows(id),
+    round_number INT,
+    topic_id INT REFERENCES topics(id),
+    interviewer_id INT REFERENCES interviewers(id),
+    interview_type_id INT REFERENCES interview_types(id),
+    evaluation_process TEXT,
+    start_time TIMESTAMP,
+    end_time TIMESTAMP
+);
+
+-- Candidates table to store information about candidates
+CREATE TABLE IF NOT EXISTS candidates (
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100),
+    phone VARCHAR(20),
+    resume_url VARCHAR(255),
+    applied_date DATE
+);
+
+-- Applications table to store information about candidate applications
+CREATE TABLE IF NOT EXISTS applications (
+    id SERIAL PRIMARY KEY,
+    candidate_id INT REFERENCES candidates(id),
+    hiring_flow_id INT REFERENCES hiring_flows(id),
+    status VARCHAR(50),
+    applied_date DATE,
+    current_round_number INT,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+
+
+
+
+
+
+
+
 -- Employee Table
-INSERT INTO Employee (FullName, DateOfBirth, Gender, PhoneNumber, Email, Address)
-VALUES ('John Doe', '1990-05-15', 'Male', '123-456-7890', 'john.doe@example.com', '123 Main St, City, Country'),
-       ('Jane Smith', '1985-09-20', 'Female', '987-654-3210', 'jane.smith@example.com', '456 Elm St, City, Country'),
-       ('Michael Johnson', '1982-03-10', 'Male', '555-555-5555', 'michael.johnson@example.com', '789 Oak St, City, Country'),
-       ('Emily Brown', '1995-12-28', 'Female', '777-777-7777', 'emily.brown@example.com', '321 Pine St, City, Country'),
-       ('David Lee', '1988-07-02', 'Male', '999-999-9999', 'david.lee@example.com', '654 Maple St, City, Country');
+INSERT INTO Employee (path, FullName, DateOfBirth, Gender, PhoneNumber, Email, Address)
+VALUES ('/assets/images/users/avatar-1.jpg', 'John Doe', '1990-05-15', 'Male', '123-456-7890', 'john.doe@example.com', '123 Main St, City, Country'),
+       ('/assets/images/users/avatar-2.jpg', 'Jane Smith', '1985-09-20', 'Female', '987-654-3210', 'jane.smith@example.com', '456 Elm St, City, Country'),
+       ('/assets/images/users/avatar-3.jpg', 'Michael Johnson', '1982-03-10', 'Male', '555-555-5555', 'michael.johnson@example.com', '789 Oak St, City, Country'),
+       ('/assets/images/users/avatar-4.jpg', 'Emily Brown', '1995-12-28', 'Female', '777-777-7777', 'emily.brown@example.com', '321 Pine St, City, Country'),
+       ('/assets/images/users/avatar-5.jpg', 'David Lee', '1988-07-02', 'Male', '999-999-9999', 'david.lee@example.com', '654 Maple St, City, Country');
        
        -- Department Table
 INSERT INTO Departments (DepartmentName, ParentDepartmentID) VALUES
@@ -580,9 +819,9 @@ INSERT INTO workload (EmployeeID, date, tasks_count) VALUES
     (2, '2024-03-03', 2);
 
 -- Insert sample interviewers
-INSERT INTO interviewers (name, email, DepartmentID) VALUES 
-    ('John Doe', 'john.doe@example.com', 1),
-    ('Jane Smith', 'jane.smith@example.com', 2);
+INSERT INTO interviewers (EmployeeID, DepartmentID) VALUES 
+    (1, 1),
+    (1, 2);
 
 -- Insert sample topics
 INSERT INTO topics (name, description) VALUES 

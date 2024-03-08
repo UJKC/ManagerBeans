@@ -1,29 +1,64 @@
 from flask import Flask, jsonify
 import psycopg2
-from psycopg2 import OperationalError
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
-def check_postgres_connection():
+# Database configuration
+db_config = {
+    'dbname': 'postgres',
+    'user': 'postgres',
+    'password': '',
+    'host': 'webapp-postgres',  # Use Docker container's IP address or hostname
+}
+
+# Database connection function
+def connect_to_db():
     try:
-        conn = psycopg2.connect(
-            dbname="postgres",
-            user="postgres",
-            password="",
-            host="webapp-postgres"
-        )
-        conn.close()
-        return True
-    except OperationalError:
-        return False
+        conn = psycopg2.connect(**db_config)
+        return conn
+    except psycopg2.Error as e:
+        print("Error connecting to PostgreSQL database:", e)
+        return None
 
-# Route for checking PostgreSQL connection status
-@app.route('/dash/connection-status')
-def connection_status():
-    if check_postgres_connection():
-        return jsonify({'status': 'PostgreSQL connection is OK'})
+# Route to fetch data from database
+@app.route('/dash')
+def get_data():
+    conn = connect_to_db()
+    if conn:
+        cur = conn.cursor()
+        cur.close()
+        conn.close()
+        return "Connected"
     else:
-        return jsonify({'status': 'Failed to connect to PostgreSQL'})
+        return "Failed to connect to database"
+    
+@app.route('/dashback/employeeinfo')
+def get_indexinfo():
+    buffer = []
+    conn = connect_to_db()
+    if conn:
+        cur = conn.cursor()
+        cur.execute("select path, EmployeeID, FullName, JobTitle, OfficeLocation, Email, PhoneNumber from Employee Natural join WorkInformation;")
+        rows = cur.fetchall()
+        for row in rows:
+            appender = {
+                'path': row[0],
+                'EmployeeID': row[1],
+                'name': row[2],
+                'work': row[3],
+                'location': row[4],
+                'email': row[5],
+                'phone': row[6]
+            }
+            buffer.append(appender)
+        cur.close()
+        conn.close()
+        print(buffer)
+        return jsonify(buffer)
+    else:
+        return "Failed to connect to database"
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True)
