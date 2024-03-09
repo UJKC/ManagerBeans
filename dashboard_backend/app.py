@@ -23,7 +23,7 @@ def connect_to_db():
         return None
 
 # Route to fetch data from database
-@app.route('/dash')
+@app.route('/dashback')
 def get_data():
     conn = connect_to_db()
     if conn:
@@ -61,4 +61,4 @@ def get_indexinfo():
         return "Failed to connect to database"
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)

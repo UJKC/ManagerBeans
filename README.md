@@ -71,6 +71,9 @@ docker exec -it webapp-postgres psql -U postgres
 docker build -t webapp-auth .
 docker run -it --name webapp-auth -p 5000:5000 --network my-network webapp-auth
 
+# Dashboard Backend
+docker build -t webapp-dashback .
+docker run -it --name webapp-dashback -p 5001:5000 --network my-network webapp-dashback
 
 # Postgres Admin (application working)
 docker run -d --name webapp-pgadmin --network my-network -p 5050:5050  thajeztah/pgadmin4

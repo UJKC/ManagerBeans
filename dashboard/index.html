@@ -529,7 +529,7 @@
         <script>
             var app = angular.module('employeeApp', []);     
             app.controller('employeeController', function ($scope, $http) {
-    $http.get('http://localhost:5000/dashback/employeeinfo')
+    $http.get('/dashback/employeeinfo')
         .then(function(response) {
             $scope.employees = response.data;
         })
