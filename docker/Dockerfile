@@ -1,5 +1,6 @@
-FROM nginx:alpine
-LABEL maintainer="Collabnix"
+FROM ubuntu
 
-VOLUME /myvol
-CMD [ "nginx","-g","daemon off;" ]
+RUN apt-get -y update; apt-get -y install curl
+RUN apt install systemd
+
+CMD [ "COMPLETED" ]
