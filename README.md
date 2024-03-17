@@ -1,6 +1,6 @@
 # ManagerBeans
 Office ai
-5001 /ai
+5002 /ai
 
 # Home
 3000 /
@@ -43,6 +43,12 @@ File storage or artifact storage
 # Nginx
 docker build -t nginx-balancer .
 docker run -it --name nginx-container -p 81:80 --network my-network nginx-balancer
+
+# AI
+docker run -it --name webapp-ai -p 11434:11434 -v ollama:/root/.ollama --network my-network ollama/ollama
+
+# AI Backend
+docker run -it --name webapp-aiback -p 5002:5000 --network my-network webapp-aiback
 
 # Home
 docker build -t webapp-home .
@@ -89,6 +95,7 @@ docker network create -d overlay replication
 docker network inspect replication
 docker service create --name nginx-container -p 81:80 --network replication --replicas 1 nginx-balancer
 docker service create --name webapp-dash -p 3001:3000 --network replication --replicas 1 webapp-dash
+docker service create --name webapp-aiback -p 5002:5000 --network replication --replicas 1 webapp-aiback
 docker service create --name webapp-dashback -p 5001:5000 --network replication --replicas 1 webapp-dashback
 docker service create --name webapp-postgres --network replication -e POSTGRES_HOST_AUTH_METHOD=trust --replicas 1 --mount type=volume,source=postgresdatabase,target=/var/lib/postgresql/data postgres
 docker service create -d --network replication -p 5000:5000 --name webapp-auth --replicas 1 webapp-auth

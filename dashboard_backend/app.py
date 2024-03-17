@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 import psycopg2
 from flask_cors import CORS
 
@@ -59,6 +59,18 @@ def get_indexinfo():
         return jsonify(buffer)
     else:
         return "Failed to connect to database"
+    
+@app.route('/dashback/recieveai', methods=['POST'])
+def dashback():
+    # Get the data from the request
+    data = request.json
+    print(data)
+
+    # Process the data as needed
+    # For example, you can log it or perform further operations
+    
+    # Return a response if necessary
+    return jsonify({"status": "success", "message": "Data received successfully"}), 200
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
